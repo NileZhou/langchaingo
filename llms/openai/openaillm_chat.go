@@ -84,6 +84,11 @@ func (o *Chat) GenerateContent(ctx context.Context, parts []llms.ContentPart, op
 		choices[i] = &llms.ContentChoice{
 			Content:    c.Message.Content,
 			StopReason: c.FinishReason,
+			GenerationInfo: map[string]any{
+				"CompletionTokens": result.Usage.CompletionTokens,
+				"PromptTokens":     result.Usage.PromptTokens,
+				"TotalTokens":      result.Usage.TotalTokens,
+			},
 		}
 	}
 
@@ -167,10 +172,6 @@ func (o *Chat) Generate(ctx context.Context, messageSets [][]schema.ChatMessage,
 	}
 
 	return generations, nil
-}
-
-func (o *Chat) GetNumTokens(text string) int {
-	return llms.CountTokens(o.client.Model, text)
 }
 
 // CreateEmbedding creates embeddings for the given input texts.
